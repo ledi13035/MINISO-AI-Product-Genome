@@ -1,0 +1,39 @@
+{
+  "cultural_genome": {
+    "IP_潮流文化": [
+      {"id": "ip_001", "name": "Disney", "category": "IP联名", "trend_score": 92},
+      {"id": "ip_002", "name": "Sanrio", "category": "IP联名", "trend_score": 95},
+      {"id": "ip_003", "name": "Loopy", "category": "IP联名", "trend_score": 88},
+      {"id": "ip_004", "name": "Chiikawa", "category": "IP联名", "trend_score": 94}
+    ],
+    "东方元素": [
+      {"id": "or_001", "name": "故宫纹样", "subcategory": "传统纹样", "trend_score": 86},
+      {"id": "or_002", "name": "敦煌壁画", "subcategory": "传统纹样", "trend_score": 82},
+      {"id": "or_003", "name": "宋画意境", "subcategory": "美学风格", "trend_score": 88},
+      {"id": "or_004", "name": "二十四节气", "subcategory": "文化符号", "trend_score": 79},
+      {"id": "or_005", "name": "新中式", "subcategory": "现代演绎", "trend_score": 93}
+    ],
+    "情绪消费": [
+      {"id": "em_001", "name": "治愈系", "description": "寻求内心平静", "trend_score": 91},
+      {"id": "em_002", "name": "解压", "description": "情绪出口", "trend_score": 85},
+      {"id": "em_003", "name": "亚比风", "description": "个性化表达", "trend_score": 87},
+      {"id": "em_004", "name": "Citywalk", "description": "城市探索", "trend_score": 80}
+    ],
+    "年轻网络文化": [
+      {"id": "yt_001", "name": "二次元", "trend_score": 89},
+      {"id": "yt_002", "name": "谷子经济", "trend_score": 92},
+      {"id": "yt_003", "name": "梗文化", "trend_score": 76},
+      {"id": "yt_004", "name": "颜值经济", "trend_score": 84}
+    ]
+  },
+  "color_palettes": {
+    "东方新中式": ["#C8102E", "#FFD700", "#003366", "#F5E6D3"],
+    "治愈奶油": ["#FFE5D9", "#FFCAD4", "#F4ACB7", "#9D8189"],
+    "亚比Y2K": ["#FF6B9D", "#00C9A7", "#C3B1E1", "#FFD93D"]
+  },
+  "material_recommendations": {
+    "环保": ["生物基大豆蜡", "可降解塑料", "FSC认证纸张"],
+    "质感": ["磨砂硅胶", "桃皮绒", "实木", "金属拉丝"],
+    "性价比": ["环保PET", "ABS塑料", "普通纸卡"]
+  }
+}
