@@ -6,6 +6,11 @@ Trend Agent - 趋势智能体
 from dataclasses import dataclass, asdict
 from typing import List
 
+try:  # 作为包导入时使用相对导入，作为脚本直接运行时回退到绝对导入
+    from .llm import extract_json
+except ImportError:  # pragma: no cover
+    from agents.llm import extract_json
+
 
 @dataclass
 class TrendSignal:
@@ -46,6 +51,45 @@ class TrendAgent:
 
     def to_dict(self, signals: List[TrendSignal]) -> List[dict]:
         return [asdict(s) for s in signals]
+
+    def analyze(
+        self, llm, category: str, platform: str = "xiaohongshu", top_k: int = 10
+    ) -> List[TrendSignal]:
+        """LLM 驱动的趋势分析：让 GPT-4o 基于类目真实研判趋势信号。
+
+        若 LLM 返回无法解析或为空，则安全回退到规则引擎 :meth:`run`，保证可用性。
+        """
+        system = (
+            "你是名创优品(MINISO)的趋势分析师，擅长从社媒与电商信号中提炼消费趋势。"
+            "你必须只返回 JSON，不要任何解释文字。格式为："
+            '{"signals":[{"keyword":"趋势词","score":0到100,"growth":0到300,'
+            '"platform":"来源平台"}]}'
+        )
+        user = (
+            f"请分析「{category}」品类在「{platform}」等平台的最新消费趋势，"
+            f"输出 top {top_k} 个趋势信号。score 为热度(0-100)，"
+            f"growth 为近 90 天环比增速(%)。"
+        )
+        try:
+            raw = llm.complete(system, user)
+        except Exception:
+            return self.run(category, platform, top_k)
+
+        data = extract_json(raw) or {}
+        signals: List[TrendSignal] = []
+        for item in data.get("signals", [])[:top_k]:
+            try:
+                signals.append(
+                    TrendSignal(
+                        keyword=str(item.get("keyword", "新趋势")),
+                        score=float(item.get("score", 70)),
+                        growth=float(item.get("growth", 50)),
+                        platform=str(item.get("platform", platform)),
+                    )
+                )
+            except (TypeError, ValueError):
+                continue
+        return signals or self.run(category, platform, top_k)
 
 
 if __name__ == "__main__":

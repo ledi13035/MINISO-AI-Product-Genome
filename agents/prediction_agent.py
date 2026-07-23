@@ -6,6 +6,11 @@ Prediction Agent - 预测智能体
 from dataclasses import dataclass, asdict
 from typing import List
 
+try:
+    from .llm import extract_json
+except ImportError:  # pragma: no cover
+    from agents.llm import extract_json
+
 
 @dataclass
 class PredictionResult:
@@ -83,6 +88,47 @@ class PredictionAgent:
 
     def to_dict(self, result: PredictionResult) -> dict:
         return asdict(result)
+
+    def analyze(
+        self, llm, trend_signals: list, consumer_insights: list, design_output
+    ) -> PredictionResult:
+        """先由透明加权模型得出数值，再用 GPT-4o 生成更有洞察的定性结论。
+
+        数值（爆款概率、预期销量、置信度）保持确定性、可解释、可测试；
+        定性部分（风险提示、立项建议、营销主题）交由 LLM 润色。
+        """
+        base = self.run(trend_signals, consumer_insights, design_output)
+
+        system = (
+            "你是名创优品(MINISO)的选品决策顾问，擅长用商业语言给出立项建议。"
+            "你必须只返回 JSON，不要解释。格式："
+            '{"risk_factors":["风险1","风险2"],"recommendation":"一句话立项建议"}'
+        )
+        signals_desc = "; ".join(
+            f"{s.get('keyword', '趋势')}(热度{s.get('score', 70)})"
+            if isinstance(s, dict)
+            else f"{getattr(s, 'keyword', '趋势')}(热度{getattr(s, 'score', 70)})"
+            for s in trend_signals[:3]
+        )
+        user = (
+            f"当前爆款概率 {base.hit_probability * 100:.0f}%，置信度 {base.confidence}。"
+            f"趋势信号：{signals_desc}。请输出风险提示与立项建议。"
+        )
+        try:
+            raw = llm.complete(system, user)
+            data = extract_json(raw) or {}
+        except Exception:
+            data = {}
+
+        risk = [str(r) for r in data.get("risk_factors", [])] or base.risk_factors
+        rec = str(data.get("recommendation", base.recommendation))
+        return PredictionResult(
+            hit_probability=base.hit_probability,
+            expected_sales=base.expected_sales,
+            risk_factors=risk,
+            confidence=base.confidence,
+            recommendation=rec,
+        )
 
 
 if __name__ == "__main__":

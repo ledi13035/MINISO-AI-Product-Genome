@@ -6,6 +6,11 @@ Consumer Agent - 用户智能体
 from dataclasses import dataclass, asdict
 from typing import List
 
+try:
+    from .llm import extract_json
+except ImportError:  # pragma: no cover
+    from agents.llm import extract_json
+
 
 @dataclass
 class ConsumerInsight:
@@ -47,6 +52,44 @@ class ConsumerAgent:
 
     def to_dict(self, insights: List[ConsumerInsight]) -> List[dict]:
         return [asdict(i) for i in insights]
+
+    def analyze(
+        self, llm, target_age: str, gender: str, keywords: List[str]
+    ) -> List[ConsumerInsight]:
+        """LLM 驱动的用户洞察：让 GPT-4o 生成更有温度的情绪价值与痛点描述。"""
+        system = (
+            "你是名创优品(MINISO)的用户研究员，擅长把抽象关键词转译为真实用户洞察。"
+            "你必须只返回 JSON，不要解释。格式："
+            '{"insights":[{"segment":"人群标签","emotion":"核心情绪价值",'
+            '"pain_point":"痛点","unmet_need":"未被满足的需求"}]}'
+        )
+        user = (
+            f"目标人群：{target_age}{gender}；关键词：{', '.join(keywords)}。"
+            f"请为这些关键词各生成一条用户洞察。"
+        )
+        try:
+            raw = llm.complete(system, user)
+        except Exception:
+            return self.run(target_age, gender, keywords)
+
+        data = extract_json(raw) or {}
+        insights: List[ConsumerInsight] = []
+        for item in data.get("insights", [])[: len(keywords)]:
+            try:
+                insights.append(
+                    ConsumerInsight(
+                        segment=str(item.get("segment", f"{target_age}{gender} · {keywords[0]}派")),
+                        age=target_age,
+                        emotion=str(item.get("emotion", f"关注{keywords[0]}的群体")),
+                        pain_point=str(item.get("pain_point", "缺乏有美学设计感的产品")),
+                        unmet_need=str(
+                            item.get("unmet_need", f"兼具{keywords[0]}感+性价比+社交分享价值的产品")
+                        ),
+                    )
+                )
+            except (TypeError, ValueError):
+                continue
+        return insights or self.run(target_age, gender, keywords)
 
 
 if __name__ == "__main__":

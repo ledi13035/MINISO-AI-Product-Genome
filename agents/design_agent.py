@@ -6,6 +6,11 @@ Design Agent - 设计智能体
 from dataclasses import dataclass, asdict
 from typing import List
 
+try:
+    from .llm import extract_json
+except ImportError:  # pragma: no cover
+    from agents.llm import extract_json
+
 
 @dataclass
 class DesignOutput:
@@ -65,6 +70,39 @@ class DesignAgent:
 
     def to_dict(self, output: DesignOutput) -> dict:
         return asdict(output)
+
+    def analyze(self, llm, keywords: List[str], category: str) -> DesignOutput:
+        """LLM 驱动的设计语言生成：让 GPT-4o 基于文化基因库重组设计元素。"""
+        system = (
+            "你是名创优品(MINISO)的设计总监，擅长把文化基因重组为可落地的产品设计语言。"
+            "你必须只返回 JSON，不要解释。格式："
+            '{"element":"设计元素描述","color_palette":["#RRGGBB",...],'
+            '"material":"推荐材料","form_factor":"形态造型","prompt":"Stable Diffusion 提示词"}'
+        )
+        user = (
+            f"品类：{category}；文化基因关键词：{', '.join(keywords)}。"
+            f"请输出一套符合目标用户的设计方案。"
+        )
+        try:
+            raw = llm.complete(system, user)
+        except Exception:
+            return self.run(keywords, category)
+
+        data = extract_json(raw) or {}
+        if not data:
+            return self.run(keywords, category)
+        return DesignOutput(
+            element=str(data.get("element", "极简设计")),
+            color_palette=[str(c) for c in data.get("color_palette", ["#FFFFFF", "#000000"])][:4],
+            material=str(data.get("material", "环保材料")),
+            form_factor=str(data.get("form_factor", "日常便携")),
+            prompt=str(
+                data.get(
+                    "prompt",
+                    f"{', '.join(keywords)}, {category}, minimalist, oriental aesthetic",
+                )
+            ),
+        )
 
 
 if __name__ == "__main__":
