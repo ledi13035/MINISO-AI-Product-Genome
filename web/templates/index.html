@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MINISO 产品基因 · 决策器</title>
+<style>
+  :root { --red:#C8102E; --ink:#222; --muted:#777; --bg:#faf7f5; --line:#ececec; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+         background:var(--bg); color:var(--ink); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; }
+  h1 .dot { color: var(--red); }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius: 14px;
+          padding: 24px; box-shadow: 0 6px 24px rgba(0,0,0,0.04); }
+  label { display:block; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  input, select { width:100%; margin-top:6px; padding:10px 12px; border:1px solid var(--line);
+                  border-radius:9px; font-size:14px; color:var(--ink); background:#fff; }
+  input:focus, select:focus { outline:none; border-color: var(--red); }
+  .chk { display:flex; align-items:center; gap:8px; color:var(--ink); font-size:14px; }
+  .chk input { width:auto; margin:0; }
+  button { width:100%; margin-top:8px; padding:13px; border:0; border-radius:10px;
+           background:var(--red); color:#fff; font-size:15px; font-weight:600; cursor:pointer; }
+  button:hover { opacity:.92; }
+  .last { margin-top: 24px; }
+  .last h3 { font-size:14px; margin:0 0 8px; color:var(--muted); }
+  .last .name { font-size:20px; font-weight:700; color:var(--red); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>MINISO 产品基因<span class="dot">·</span>决策器</h1>
+    <p class="sub">输入目标用户 / 品类 / 关键词，跑 4 个 Agent 生成产品方案</p>
+
+    <form class="card" method="post" action="/report">
+      <label>目标用户
+        <input name="target_user" value="18-25岁女性" placeholder="如 18-25岁女性">
+      </label>
+      <label>品类
+        <select name="category">
+          {% for c in categories %}<option value="{{c}}">{{c}}</option>{% endfor %}
+        </select>
+      </label>
+      <label>价格区间
+        <input name="price" value="30-100元">
+      </label>
+      <label>关键词（空格或逗号分隔）
+        <input name="keywords" value="新中式 蝴蝶">
+      </label>
+      <label class="chk">
+        <input type="checkbox" name="no_llm" checked> 仅用规则引擎（无需 API key，离线可用）
+      </label>
+      <button type="submit">生成产品方案</button>
+    </form>
+
+    {% if last %}
+    <div class="card last">
+      <h3>最近一次报告（demo/last_report.json）</h3>
+      <div class="name">{{ last.product_name }}</div>
+      <p style="color:var(--muted);margin:8px 0 0;">爆款预测：{{ (last.prediction.hit_probability * 100) | round | int }}%
+         · 引擎：{{ 'GPT-4o' if last.engine == 'llm' else '规则引擎' }}</p>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
