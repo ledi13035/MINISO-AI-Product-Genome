@@ -88,6 +88,28 @@
   </div>
 
   <div class="section">
+    <h2>产品样板图（服装三视图）</h2>
+    {% set c1 = report.design.color_palette[0] if report.design.color_palette else '#C8102E' %}
+    {% set c2 = report.design.color_palette[1] if report.design.color_palette|length > 1 else '#003366' %}
+    <svg viewBox="0 0 720 270" width="100%" role="img" aria-label="服装三视图样板图">
+      <rect x="15" y="42" width="220" height="190" rx="12" fill="#fff" stroke="#ececec"/>
+      <rect x="255" y="42" width="220" height="190" rx="12" fill="#fff" stroke="#ececec"/>
+      <rect x="495" y="42" width="220" height="190" rx="12" fill="#fff" stroke="#ececec"/>
+      <text x="125" y="38" text-anchor="middle" font-size="13" fill="#777">正面</text>
+      <text x="365" y="38" text-anchor="middle" font-size="13" fill="#777">侧面</text>
+      <text x="605" y="38" text-anchor="middle" font-size="13" fill="#777">背面</text>
+      <!-- 正面：上衣廓形 + 门襟线 -->
+      <path d="M 85,82 L 112,82 Q 125,98 138,82 L 165,82 L 188,104 L 172,118 L 158,106 L 158,200 L 92,200 L 92,106 L 78,118 L 62,104 Z" fill="{{ c1 }}" stroke="{{ c2 }}" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="125" y1="98" x2="125" y2="200" stroke="{{ c2 }}" stroke-width="2"/>
+      <!-- 侧面：衣身侧影 -->
+      <path d="M 590,86 Q 605,76 620,86 L 624,120 L 616,200 L 594,200 L 586,120 Z" fill="{{ c1 }}" stroke="{{ c2 }}" stroke-width="3" stroke-linejoin="round"/>
+      <!-- 背面：上衣廓形（平领） -->
+      <path d="M 325,82 L 352,82 L 378,82 L 405,82 L 428,104 L 412,118 L 398,106 L 398,200 L 332,200 L 332,106 L 318,118 L 302,104 Z" fill="{{ c1 }}" stroke="{{ c2 }}" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+    <p style="color:var(--muted);font-size:12px;margin:6px 0 0;">＊ 示意服装样板图，依据配色与形态自动生成</p>
+  </div>
+
+  <div class="section">
     <h2>爆款预测</h2>
     {% set pct = (report.prediction.hit_probability * 100) | round | int %}
     <div class="pct">{{ pct }}%</div>
