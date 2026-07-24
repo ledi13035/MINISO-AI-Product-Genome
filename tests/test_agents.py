@@ -57,10 +57,44 @@ def test_design_agent_run_dedup_and_valid():
     out = agent.run(["东方", "治愈", "年轻化"], "香氛盲盒")
     # 设计元素去重后仍为列表
     assert isinstance(out.element, str) and len(out.element) > 0
-    assert 0 < len(out.color_palette) <= 4
+    assert 0 < len(out.color_palette) <= 5
     assert all(c.startswith("#") for c in out.color_palette)
     assert out.material
     assert out.prompt
+
+
+def test_design_agent_run_normal_no_limited_edition():
+    agent = DesignAgent()
+    out = agent.run(["新中式", "蝴蝶"], "饰品")
+    # 普通关键词不应误触发限定身份
+    assert out.season == ""
+    assert out.cobrand == ""
+
+
+def test_design_agent_run_seasonal_christmas():
+    agent = DesignAgent()
+    out = agent.run(["圣诞", "饰品"], "饰品")
+    assert out.season == "圣诞"
+    # 限定配色应包含圣诞红绿金，并前置到调色板
+    assert "#C8102E" in out.color_palette and "#0B6623" in out.color_palette
+    assert out.note
+
+
+def test_design_agent_run_cobrand_disney():
+    agent = DesignAgent()
+    out = agent.run(["迪士尼", "文具"], "文具")
+    assert out.cobrand == "迪士尼"
+    # 联名配色（迪士尼蓝）应体现在调色板
+    assert "#113CCF" in out.color_palette
+    assert out.note
+
+
+def test_design_agent_run_combined_limited():
+    agent = DesignAgent()
+    out = agent.run(["新春", "故宫", "生活家居"], "生活家居")
+    assert out.season == "新春"
+    assert out.cobrand == "故宫"
+    assert "#C8102E" in out.color_palette
 
 
 def test_design_agent_run_unknown_keyword():
