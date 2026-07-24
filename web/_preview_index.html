@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MINISO 产品基因 · 决策器（静态预览）</title>
+<style>
+  :root { --red:#C8102E; --ink:#222; --muted:#777; --bg:#faf7f5; --line:#ececec; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+         background:var(--bg); color:var(--ink); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; }
+  h1 .dot { color: var(--red); }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius: 14px;
+          padding: 24px; box-shadow: 0 6px 24px rgba(0,0,0,0.04); }
+  label { display:block; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  input, select { width:100%; margin-top:6px; padding:10px 12px; border:1px solid var(--line);
+                  border-radius:9px; font-size:14px; color:var(--ink); background:#fff; }
+  input:focus, select:focus { outline:none; border-color: var(--red); }
+  .chk { display:flex; align-items:center; gap:8px; color:var(--ink); font-size:14px; }
+  .chk input { width:auto; margin:0; }
+  button { width:100%; margin-top:8px; padding:13px; border:0; border-radius:10px;
+           background:var(--red); color:#fff; font-size:15px; font-weight:600; cursor:pointer; }
+  .sample-link { display:block; text-align:center; margin-top:14px;
+                 color:var(--red); text-decoration:none; font-size:14px; }
+  .sample-link:hover { text-decoration:underline; }
+  .note { margin-top:18px; font-size:12px; color:var(--muted); text-align:center; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>MINISO 产品基因<span class="dot">·</span>决策器</h1>
+    <p class="sub">输入目标用户 / 品类 / 关键词，跑 4 个 Agent 生成产品方案</p>
+
+    <form class="card">
+      <label>目标用户
+        <input value="18-25岁女性" disabled>
+      </label>
+      <label>品类
+        <select disabled>
+          <option>生活家居</option><option>饰品</option><option>美妆</option><option>文具</option>
+        </select>
+      </label>
+      <label>价格区间
+        <input value="30-100元" disabled>
+      </label>
+      <label>关键词（空格或逗号分隔）
+        <input value="新中式 蝴蝶" disabled>
+      </label>
+      <label class="chk">
+        <input type="checkbox" checked disabled> 仅用规则引擎（无需 API key，离线可用）
+      </label>
+      <button type="button">生成产品方案（需启动服务）</button>
+      <a class="sample-link" href="_preview_report.html">不想填？看一份示例报告 →</a>
+    </form>
+
+    <p class="note">这是静态预览页：表单需启动 Flask 服务才能提交；点上方链接可直接查看已渲染的示例报告。</p>
+  </div>
+</body>
+</html>
