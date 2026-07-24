@@ -76,5 +76,18 @@ def report():
     return render_template("report.html", report=rep, categories=CATEGORIES)
 
 
+@app.route("/sample")
+def sample():
+    """无需填表，直接渲染一份固定样例报告（新春 + 故宫联名款）。"""
+    rep = generate_product_report(
+        target_user="18-25岁女性",
+        category="生活家居",
+        price_range="30-100元",
+        keywords=["新春", "故宫", "香氛"],
+        llm=None,
+    )
+    return render_template("report.html", report=rep, categories=CATEGORIES)
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=False)
