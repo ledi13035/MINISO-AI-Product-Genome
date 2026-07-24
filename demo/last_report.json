@@ -1,0 +1,77 @@
+{
+  "engine": "rule",
+  "product_name": "「新中式治愈好物系列」",
+  "market_insight": "年轻消费者追捧治愈风格，新中式相关搜索量环比+180%持续走高",
+  "design": {
+    "element": "圆润弧线 + 奶油色 + 宋代植物纹样",
+    "color_palette": [
+      "#FFE5D9",
+      "#FFCAD4",
+      "#C8102E",
+      "#FFD700"
+    ],
+    "material": "磨砂硅胶、环保PET",
+    "form_factor": "桌面陈列",
+    "prompt": "圆润弧线, 奶油色, 宋代植物纹样, 生活家居 design, #FFE5D9, #FFCAD4, #C8102E, minimalist, oriental aesthetic, healing vibe, product photography"
+  },
+  "consumer": [
+    {
+      "segment": "18-25女 · 治愈派",
+      "age": "18-25",
+      "emotion": "寻求内心平静，渴望从快节奏中抽离",
+      "pain_point": "在寻求内心平静，渴望从快节奏中抽离的需求上，缺乏有美学设计感的产品",
+      "unmet_need": "兼具治愈感 + 性价比 + 社交分享价值的产品"
+    },
+    {
+      "segment": "18-25女 · 东方派",
+      "age": "18-25",
+      "emotion": "文化自信，对传统美学有亲近感",
+      "pain_point": "在文化自信，对传统美学有亲近感的需求上，缺乏有美学设计感的产品",
+      "unmet_need": "兼具东方感 + 性价比 + 社交分享价值的产品"
+    }
+  ],
+  "trend": [
+    {
+      "keyword": "新中式",
+      "score": 95,
+      "growth": 180,
+      "platform": "xiaohongshu"
+    },
+    {
+      "keyword": "植物香氛",
+      "score": 88,
+      "growth": 162,
+      "platform": "xiaohongshu"
+    },
+    {
+      "keyword": "情绪疗愈",
+      "score": 81,
+      "growth": 144,
+      "platform": "xiaohongshu"
+    },
+    {
+      "keyword": "盲盒",
+      "score": 74,
+      "growth": 126,
+      "platform": "xiaohongshu"
+    },
+    {
+      "keyword": "东方植物",
+      "score": 67,
+      "growth": 108,
+      "platform": "xiaohongshu"
+    }
+  ],
+  "prediction": {
+    "hit_probability": 0.83,
+    "expected_sales": "10-30 万件 / 季度",
+    "risk_factors": [
+      "同质化竞争",
+      "季节性窗口期短"
+    ],
+    "confidence": "高",
+    "recommendation": "强烈建议立项，优先进入开发流程"
+  },
+  "marketing_theme": "「把新中式带回房间」",
+  "next_step": "强烈建议立项，优先进入开发流程"
+}
