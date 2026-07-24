@@ -36,6 +36,37 @@ def _parse_target_user(target_user: str):
     return age, gender
 
 
+# 品类名词：用于产品名后缀，避免「新中式首饰新中式」这类重复
+_CATEGORY_NOUN = {
+    "饰品": "首饰",
+    "生活家居": "好物",
+    "美妆": "彩妆",
+    "文具": "手帐",
+}
+# 不同品类的营销动作词，让营销主题更贴合场景
+_THEME_VERB = {
+    "饰品": "戴在身上",
+    "生活家居": "带回房间",
+    "美妆": "画在脸上",
+    "文具": "写进日常",
+}
+
+
+def _build_product_name(category: str, top_trend: str, keywords: list) -> str:
+    """构造自然、无重复的产品名：趋势核心 + 不重复关键词 + 品类名词 + 系列。"""
+    noun = _CATEGORY_NOUN.get(category, "好物")
+    trend_core = top_trend.replace(noun, "")  # 剥离已含在趋势词里的品类名词，避免重复
+    mods = []
+    if trend_core:
+        mods.append(trend_core)
+    for kw in keywords:
+        if kw not in top_trend and kw != noun and kw not in mods:
+            mods.append(kw)
+        if len(mods) >= 2:
+            break
+    return f"「{''.join(mods)}{noun}系列」"
+
+
 def generate_product_report(
     target_user: str,
     category: str,
@@ -112,22 +143,22 @@ def generate_product_report(
     # 组装报告（结构稳定，与引擎无关）
     top_trend = trend_signals[0].keyword if trend_signals else "新趋势"
     top_keyword = keywords[0] if keywords else "治愈"
+    growth_str = f"+{trend_signals[0].growth:.0f}%" if trend_signals else ""
 
-    product_name = (
-        f"「{top_trend}{top_keyword}香氛盲盒」"
-        if category == "生活家居"
-        else f"「{top_trend}{top_keyword}系列」"
-    )
+    product_name = _build_product_name(category, top_trend, keywords)
 
     report = {
         "engine": "llm" if use_llm else "rule",
         "product_name": product_name,
-        "market_insight": f"年轻消费者关注{keywords[0]}价值，{top_trend}类目搜索量持续增长",
+        "market_insight": (
+            f"年轻消费者追捧{top_keyword}风格，"
+            f"{top_trend}相关搜索量环比{growth_str}持续走高"
+        ),
         "design": design_agent.to_dict(design_output),
         "consumer": consumer_agent.to_dict(consumer_insights[:2]),
         "trend": trend_agent.to_dict(trend_signals[:5]),
         "prediction": prediction_agent.to_dict(prediction),
-        "marketing_theme": f"「把{top_trend}带回房间」",
+        "marketing_theme": f"「把{top_trend}{_THEME_VERB.get(category, '装进日常')}」",
         "next_step": prediction.recommendation,
     }
     return report
