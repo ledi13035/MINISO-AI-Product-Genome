@@ -1,9 +1,0 @@
-# Dashboard 占位
-
-正式版会用 matplotlib / echarts 渲染：
-- 趋势热度 Top 10 柱状图
-- 用户情绪分布饼图
-- 设计配色卡
-- 爆款预测仪表盘
-
-`dashboard.png` 后续替换。
