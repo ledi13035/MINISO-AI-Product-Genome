@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>产品决策报告</title>
+<style>
+  :root { --red:#C8102E; --ink:#222; --muted:#777; --bg:#faf7f5; --line:#ececec;
+          --green:#2C8A4A; --gold:#C9A227; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+         background:var(--bg); color:var(--ink); line-height:1.6; }
+  .wrap { max-width: 860px; margin:0 auto; padding: 40px 20px 64px; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .back { color:var(--red); text-decoration:none; font-size:14px; }
+  .engine { font-size:12px; color:var(--muted); border:1px solid var(--line);
+            padding:3px 10px; border-radius:20px; }
+  h1.name { font-size:30px; margin:0 0 4px; }
+  .section { background:#fff; border:1px solid var(--line); border-radius:14px;
+             padding:22px 24px; margin-bottom:18px; box-shadow:0 6px 24px rgba(0,0,0,0.04); }
+  .section h2 { font-size:15px; margin:0 0 14px; color:var(--red);
+                display:flex; align-items:center; gap:8px; }
+  .section h2::before { content:""; width:4px; height:16px; background:var(--red); border-radius:2px; }
+  .badges { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .badge { font-size:12px; padding:4px 11px; border-radius:20px; color:#fff; font-weight:600; }
+  .badge.season { background:var(--green); }
+  .badge.cobrand { background:var(--gold); }
+  .note { font-size:13px; color:var(--muted); background:#fff8f0; border-left:3px solid var(--gold);
+          padding:8px 12px; border-radius:6px; margin-bottom:14px; }
+  .swatches { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px; }
+  .sw { width:54px; text-align:center; }
+  .sw .chip { height:46px; border-radius:9px; border:1px solid rgba(0,0,0,.08); }
+  .sw .hex { font-size:11px; color:var(--muted); margin-top:4px; }
+  .kv { display:grid; grid-template-columns: 92px 1fr; gap:6px 14px; font-size:14px; }
+  .kv .k { color:var(--muted); }
+  .gauge { height:14px; background:#eee; border-radius:20px; overflow:hidden; margin:8px 0 4px; }
+  .gauge > span { display:block; height:100%; background:linear-gradient(90deg,#FF6B9D,var(--red)); }
+  .pct { font-size:26px; font-weight:800; color:var(--red); }
+  .tier { font-size:13px; color:var(--muted); }
+  .list { margin:0; padding:0; list-style:none; }
+  .list li { padding:8px 0; border-bottom:1px dashed var(--line); font-size:14px; }
+  .list li:last-child { border-bottom:0; }
+  .tag { display:inline-block; background:#f3f3f3; color:#555; font-size:12px;
+         padding:2px 8px; border-radius:6px; margin-left:8px; }
+  .pill { color:var(--red); font-weight:600; }
+  .cta { background:var(--red); color:#fff; border:0; border-radius:10px; padding:12px 18px;
+         font-size:15px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="/">← 返回重填</a>
+    <span class="engine">{{ 'GPT-4o 分析' if report.engine == 'llm' else '本地规则引擎' }}</span>
+  </div>
+
+  <h1 class="name">{{ report.product_name }}</h1>
+  {% if report.design.season or report.design.cobrand %}
+  <div class="badges">
+    {% if report.design.season %}<span class="badge season">季节限定 · {{ report.design.season }}</span>{% endif %}
+    {% if report.design.cobrand %}<span class="badge cobrand">联名款 · {{ report.design.cobrand }}</span>{% endif %}
+  </div>
+  {% endif %}
+  {% if report.design.note %}<div class="note">{{ report.design.note }}</div>{% endif %}
+
+  <div class="section">
+    <h2>市场洞察</h2>
+    <p style="margin:0;font-size:15px;">{{ report.market_insight }}</p>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:13px;">营销主题：<span class="pill">{{ report.marketing_theme }}</span></p>
+  </div>
+
+  <div class="section">
+    <h2>设计语言</h2>
+    <div class="kv">
+      <div class="k">设计元素</div><div>{{ report.design.element }}</div>
+      <div class="k">建议材料</div><div>{{ report.design.material }}</div>
+      <div class="k">形态造型</div><div>{{ report.design.form_factor }}</div>
+    </div>
+    <div style="margin-top:14px;color:var(--muted);font-size:13px;">配色</div>
+    <div class="swatches">
+      {% for c in report.design.color_palette %}
+      <div class="sw">
+        <div class="chip" style="background:{{ c }}"></div>
+        <div class="hex">{{ c }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>爆款预测</h2>
+    {% set pct = (report.prediction.hit_probability * 100) | round | int %}
+    <div class="pct">{{ pct }}%</div>
+    <div class="gauge"><span style="width:{{ pct }}%"></span></div>
+    <div class="kv" style="margin-top:12px;">
+      <div class="k">预期销量</div><div>{{ report.prediction.expected_sales }}</div>
+      {% if report.prediction.tier %}<div class="k">风险档位</div><div>{{ report.prediction.tier }}</div>{% endif %}
+      <div class="k">建议</div><div>{{ report.prediction.recommendation }}</div>
+    </div>
+  </div>
+
+  {% if report.trend %}
+  <div class="section">
+    <h2>趋势信号</h2>
+    <ul class="list">
+      {% for t in report.trend %}
+      <li>{{ t.keyword }} <span class="tag">热度 {{ t.score | round | int }}</span> <span class="tag">+{{ t.growth | round | int }}%</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if report.consumer %}
+  <div class="section">
+    <h2>用户洞察</h2>
+    <ul class="list">
+      {% for c in report.consumer %}
+      <li>{{ c.segment }}：{{ c.emotion }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="section">
+    <h2>下一步</h2>
+    <p style="margin:0 0 14px;font-size:15px;">{{ report.next_step }}</p>
+    <a class="cta" href="/">再生成一个方案</a>
+  </div>
+</div>
+</body>
+</html>
