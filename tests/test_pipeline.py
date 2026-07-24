@@ -83,7 +83,11 @@ def test_report_different_category():
         target_user="18-25岁学生", category="饰品", price_range="20-80元",
         keywords=["新中式", "蝴蝶"], llm=None,
     )
-    # 产品名由实际 top 趋势 + 首个关键词拼接，结构稳定即可
-    assert report["product_name"].startswith("「") and "系列" in report["product_name"]
+    # 产品名由实际 top 趋势 + 不重复的关键词拼接，结构稳定且无冗余
+    assert report["product_name"].startswith("「") and report["product_name"].endswith("」")
+    assert "系列" in report["product_name"]
     assert "新中式" in report["product_name"]
+    assert "蝴蝶" in report["product_name"]
+    # 回归保护：趋势词已含"首饰"时，不应再把关键词"新中式"重复拼进名字
+    assert "新中式首饰新中式" not in report["product_name"]
     assert 0 <= report["prediction"]["hit_probability"] <= 1
