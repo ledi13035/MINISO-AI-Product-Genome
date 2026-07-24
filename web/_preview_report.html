@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>产品决策报告</title>
+<style>
+  :root { --red:#C8102E; --ink:#222; --muted:#777; --bg:#faf7f5; --line:#ececec;
+          --green:#2C8A4A; --gold:#C9A227; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+         background:var(--bg); color:var(--ink); line-height:1.6; }
+  .wrap { max-width: 860px; margin:0 auto; padding: 40px 20px 64px; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .back { color:var(--red); text-decoration:none; font-size:14px; }
+  .engine { font-size:12px; color:var(--muted); border:1px solid var(--line);
+            padding:3px 10px; border-radius:20px; }
+  h1.name { font-size:30px; margin:0 0 4px; }
+  .section { background:#fff; border:1px solid var(--line); border-radius:14px;
+             padding:22px 24px; margin-bottom:18px; box-shadow:0 6px 24px rgba(0,0,0,0.04); }
+  .section h2 { font-size:15px; margin:0 0 14px; color:var(--red);
+                display:flex; align-items:center; gap:8px; }
+  .section h2::before { content:""; width:4px; height:16px; background:var(--red); border-radius:2px; }
+  .badges { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .badge { font-size:12px; padding:4px 11px; border-radius:20px; color:#fff; font-weight:600; }
+  .badge.season { background:var(--green); }
+  .badge.cobrand { background:var(--gold); }
+  .note { font-size:13px; color:var(--muted); background:#fff8f0; border-left:3px solid var(--gold);
+          padding:8px 12px; border-radius:6px; margin-bottom:14px; }
+  .swatches { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px; }
+  .sw { width:54px; text-align:center; }
+  .sw .chip { height:46px; border-radius:9px; border:1px solid rgba(0,0,0,.08); }
+  .sw .hex { font-size:11px; color:var(--muted); margin-top:4px; }
+  .kv { display:grid; grid-template-columns: 92px 1fr; gap:6px 14px; font-size:14px; }
+  .kv .k { color:var(--muted); }
+  .gauge { height:14px; background:#eee; border-radius:20px; overflow:hidden; margin:8px 0 4px; }
+  .gauge > span { display:block; height:100%; background:linear-gradient(90deg,#FF6B9D,var(--red)); }
+  .pct { font-size:26px; font-weight:800; color:var(--red); }
+  .tier { font-size:13px; color:var(--muted); }
+  .list { margin:0; padding:0; list-style:none; }
+  .list li { padding:8px 0; border-bottom:1px dashed var(--line); font-size:14px; }
+  .list li:last-child { border-bottom:0; }
+  .tag { display:inline-block; background:#f3f3f3; color:#555; font-size:12px;
+         padding:2px 8px; border-radius:6px; margin-left:8px; }
+  .pill { color:var(--red); font-weight:600; }
+  .cta { background:var(--red); color:#fff; border:0; border-radius:10px; padding:12px 18px;
+         font-size:15px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="#">← 返回重填</a>
+    <span class="engine">本地规则引擎</span>
+  </div>
+
+  <h1 class="name">「新中式新春好物系列」</h1>
+  <div class="badges">
+    <span class="badge season">季节限定 · 新春</span>
+    <span class="badge cobrand">联名款 · 故宫</span>
+  </div>
+  <div class="note">新春限定：东方新春美学 + 国潮纹样；故宫联名：东方美学，文化厚度与收藏感</div>
+
+  <div class="section">
+    <h2>市场洞察</h2>
+    <p style="margin:0;font-size:15px;">年轻消费者追捧新春风格，新中式相关搜索量环比+180%持续走高</p>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:13px;">营销主题：<span class="pill">「把新中式带回房间」</span></p>
+  </div>
+
+  <div class="section">
+    <h2>设计语言</h2>
+    <div class="kv">
+      <div class="k">设计元素</div><div>故宫纹样 + 千里江山 + 新春元素</div>
+      <div class="k">建议材料</div><div>丝绸、金属、红金工艺</div>
+      <div class="k">形态造型</div><div>桌面陈列</div>
+    </div>
+    <div style="margin-top:14px;color:var(--muted);font-size:13px;">配色</div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#C8102E"></div><div class="hex">#C8102E</div></div>
+      <div class="sw"><div class="chip" style="background:#003366"></div><div class="hex">#003366</div></div>
+      <div class="sw"><div class="chip" style="background:#FFD700"></div><div class="hex">#FFD700</div></div>
+      <div class="sw"><div class="chip" style="background:#F5E6D3"></div><div class="hex">#F5E6D3</div></div>
+      <div class="sw"><div class="chip" style="background:#E8DCC4"></div><div class="hex">#E8DCC4</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>产品样板图（服装三视图）</h2>
+    <svg viewBox="0 0 720 270" width="100%" role="img" aria-label="服装三视图样板图">
+      <rect x="15" y="42" width="220" height="190" rx="12" fill="#fff" stroke="#ececec"/>
+      <rect x="255" y="42" width="220" height="190" rx="12" fill="#fff" stroke="#ececec"/>
+      <rect x="495" y="42" width="220" height="190" rx="12" fill="#fff" stroke="#ececec"/>
+      <text x="125" y="38" text-anchor="middle" font-size="13" fill="#777">正面</text>
+      <text x="365" y="38" text-anchor="middle" font-size="13" fill="#777">侧面</text>
+      <text x="605" y="38" text-anchor="middle" font-size="13" fill="#777">背面</text>
+      <path d="M 85,82 L 112,82 Q 125,98 138,82 L 165,82 L 188,104 L 172,118 L 158,106 L 158,200 L 92,200 L 92,106 L 78,118 L 62,104 Z" fill="#C8102E" stroke="#003366" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="125" y1="98" x2="125" y2="200" stroke="#003366" stroke-width="2"/>
+      <path d="M 590,86 Q 605,76 620,86 L 624,120 L 616,200 L 594,200 L 586,120 Z" fill="#C8102E" stroke="#003366" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 325,82 L 352,82 L 378,82 L 405,82 L 428,104 L 412,118 L 398,106 L 398,200 L 332,200 L 332,106 L 318,118 L 302,104 Z" fill="#C8102E" stroke="#003366" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+    <p style="color:var(--muted);font-size:12px;margin:6px 0 0;">＊ 示意服装样板图，依据配色与形态自动生成</p>
+  </div>
+
+  <div class="section">
+    <h2>爆款预测</h2>
+    <div class="pct">83%</div>
+    <div class="gauge"><span style="width:83%"></span></div>
+    <div class="kv" style="margin-top:12px;">
+      <div class="k">预期销量</div><div>10-30 万件 / 季度</div>
+      <div class="k">建议</div><div>强烈建议立项，优先进入开发流程</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>趋势信号</h2>
+    <ul class="list">
+      <li>新中式 <span class="tag">热度 95</span> <span class="tag">+180%</span></li>
+      <li>植物香氛 <span class="tag">热度 88</span> <span class="tag">+162%</span></li>
+      <li>情绪疗愈 <span class="tag">热度 81</span> <span class="tag">+144%</span></li>
+      <li>盲盒 <span class="tag">热度 74</span> <span class="tag">+126%</span></li>
+      <li>东方植物 <span class="tag">热度 67</span> <span class="tag">+108%</span></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>用户洞察</h2>
+    <ul class="list">
+      <li>18-25女 · 新春派：关注新春的群体</li>
+      <li>18-25女 · 故宫派：关注故宫的群体</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>下一步</h2>
+    <p style="margin:0 0 14px;font-size:15px;">强烈建议立项，优先进入开发流程</p>
+    <a class="cta" href="#">再生成一个方案</a>
+  </div>
+</div>
+</body>
+</html>
