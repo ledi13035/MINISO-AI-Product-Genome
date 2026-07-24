@@ -16,3 +16,14 @@ Thumbs.db
 # Data
 *.log
 last_report.json
+
+# Env
+.env
+
+# Test caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Viz temp
+visualization/_tmp_*.png
