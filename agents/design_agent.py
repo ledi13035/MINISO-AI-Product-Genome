@@ -19,10 +19,96 @@ class DesignOutput:
     material: str         # 推荐材料
     form_factor: str      # 形态/造型
     prompt: str           # Stable Diffusion prompt
+    season: str = ""      # 季节限定标识（如 圣诞/春日）
+    cobrand: str = ""     # 联名款 IP 标识（如 迪士尼/故宫）
+    note: str = ""        # 限定/联名说明
 
 
 class DesignAgent:
-    """设计智能体 - 模拟版"""
+    """设计智能体 - 模拟版（规则引擎离线可用，也可接 LLM）"""
+
+    # 季节限定库：命中后叠加限定配色/元素，并把限定配色前置以保留辨识度
+    SEASONS = {
+        "圣诞": {
+            "colors": ["#C8102E", "#0B6623", "#FFD700"],
+            "elements": ["雪花纹样", "礼盒丝带", "麋鹿剪影"],
+            "materials": ["绒布", "金属配件"],
+            "note": "圣诞限定：红绿金配色 + 节日礼物语汇",
+        },
+        "新年": {
+            "colors": ["#C8102E", "#FFD700", "#0B6623"],
+            "elements": ["烟花", "灯笼", "金币"],
+            "materials": ["红金工艺", "烫金纸"],
+            "note": "新年限定：喜庆红金 + 纳福元素",
+        },
+        "新春": {
+            "colors": ["#C8102E", "#FFD700", "#003366"],
+            "elements": ["祥云", "灯笼", "牡丹"],
+            "materials": ["红金工艺", "绒布"],
+            "note": "新春限定：东方新春美学 + 国潮纹样",
+        },
+        "夏日": {
+            "colors": ["#00C9A7", "#FFD93D", "#FF6B9D"],
+            "elements": ["海浪", "水果切片", "冰系光泽"],
+            "materials": ["透明亚克力", "磨砂硅胶"],
+            "note": "夏日限定：清凉配色 + 海洋/水果元素",
+        },
+        "秋冬": {
+            "colors": ["#8B4513", "#C0392B", "#E8DCC4"],
+            "elements": ["落叶", "毛绒", "暖光"],
+            "materials": ["针织", "绒面"],
+            "note": "秋冬限定：暖色调 + 毛绒/针织质感",
+        },
+        "春日": {
+            "colors": ["#FFCAD4", "#A3C9A8", "#F5E6D3"],
+            "elements": ["樱花", "新芽", "蝴蝶"],
+            "materials": ["陶瓷", "再生纸"],
+            "note": "春日限定：柔粉嫩绿 + 花卉元素",
+        },
+    }
+    # 关键词 → 季节 触发词（大小写不敏感）
+    SEASON_TRIGGERS = {
+        "圣诞": ["圣诞", "圣诞节", "christmas"],
+        "新年": ["新年", "元旦"],
+        "新春": ["春节", "新春", "过年", "福", "本命年"],
+        "夏日": ["夏日", "夏季", "夏天", "清凉", "海洋", "西瓜"],
+        "秋冬": ["秋冬", "秋季", "秋天", "冬天", "暖冬", "毛绒"],
+        "春日": ["春日", "春季", "春天", "樱花", "踏青"],
+    }
+
+    # 联名款库：命中知名 IP 后叠加联名设计语言
+    COBRANDS = {
+        "迪士尼": {
+            "colors": ["#113CCF", "#E4002B", "#FFFFFF"],
+            "elements": ["米奇轮廓", "童话符号", "经典红黑"],
+            "materials": ["搪胶", "毛绒"],
+            "note": "迪士尼联名：经典卡通 IP，强辨识度与童趣感",
+        },
+        "三丽鸥": {
+            "colors": ["#FFB6C1", "#FFF0F5", "#C81571"],
+            "elements": ["Hello Kitty", "玉桂狗", "星之卡比"],
+            "materials": ["毛绒", "亚克力"],
+            "note": "三丽鸥联名：甜美可爱风，少女心定位",
+        },
+        "故宫": {
+            "colors": ["#C8102E", "#003366", "#FFD700"],
+            "elements": ["故宫纹样", "千里江山", "缠枝纹"],
+            "materials": ["丝绸", "金属"],
+            "note": "故宫联名：东方美学，文化厚度与收藏感",
+        },
+        "泡泡玛特": {
+            "colors": ["#FF6B9D", "#00C9A7", "#C3B1E1"],
+            "elements": ["盲盒公仔", "Molly", "Dimoo"],
+            "materials": ["PVC", "搪胶"],
+            "note": "泡泡玛特联名：潮玩盲盒基因，收藏驱动",
+        },
+        "line friends": {
+            "colors": ["#FFFFFF", "#8B5A2B", "#FF6B9D"],
+            "elements": ["布朗熊", "可妮兔", "莎莉鸡"],
+            "materials": ["毛绒", "陶瓷"],
+            "note": "LINE FRIENDS 联名：日常萌系，社交属性强",
+        },
+    }
 
     def __init__(self):
         # 文化基因库简化版
@@ -90,6 +176,24 @@ class DesignAgent:
             },
         }
 
+    # ------------------------------------------------------------------ #
+    # 限定身份识别（季节 / 联名），规则引擎与 LLM 路径共用，保证结构一致
+    # ------------------------------------------------------------------ #
+    def _detect_season(self, keywords: List[str]) -> str:
+        text = " ".join(keywords).lower()
+        for season, triggers in self.SEASON_TRIGGERS.items():
+            for t in triggers:
+                if t.lower() in text:
+                    return season
+        return ""
+
+    def _detect_cobrand(self, keywords: List[str]) -> str:
+        text = " ".join(keywords).lower()
+        for brand in self.COBRANDS:
+            if brand.lower() in text:
+                return brand
+        return ""
+
     def run(self, keywords: List[str], category: str) -> DesignOutput:
         """根据关键词 + 品类生成一套协调的设计语言（规则引擎，离线可用）。"""
         elements, colors, materials = [], [], []
@@ -121,19 +225,42 @@ class DesignAgent:
                 materials = ["环保材料"]
             form_factor = "日常便携"
 
+        # 季节限定 + 联名款：叠加限定设计语言，并把限定配色前置以保留辨识度
+        season = self._detect_season(keywords)
+        cobrand = self._detect_cobrand(keywords)
+        notes = []
+        if season:
+            s = self.SEASONS[season]
+            elements.extend(s["elements"][:2])
+            materials.extend(s["materials"][:1])
+            colors = s["colors"] + colors
+            notes.append(s["note"])
+        if cobrand:
+            c = self.COBRANDS[cobrand]
+            elements.extend(c["elements"][:2])
+            materials.extend(c["materials"][:1])
+            colors = c["colors"] + colors
+            notes.append(c["note"])
+
         # 去重保持顺序
         elements = list(dict.fromkeys(elements)) or [f"{category}设计"]
         colors = list(dict.fromkeys(colors))
         materials = list(dict.fromkeys(materials))
 
-        prompt = f"{', '.join(elements[:3])}, {category} design, {', '.join(colors[:3])}, minimalist, oriental aesthetic, healing vibe, product photography"
+        prompt = (
+            f"{', '.join(elements[:3])}, {category} design, {', '.join(colors[:3])}, "
+            f"limited edition, oriental aesthetic, healing vibe, product photography"
+        )
 
         return DesignOutput(
             element=" + ".join(elements[:3]),
-            color_palette=colors[:4],
-            material="、".join(materials[:2]),
+            color_palette=colors[:5],
+            material="、".join(materials[:3]),
             form_factor=form_factor,
             prompt=prompt,
+            season=season,
+            cobrand=cobrand,
+            note="；".join(notes),
         )
 
     def to_dict(self, output: DesignOutput) -> dict:
@@ -159,9 +286,19 @@ class DesignAgent:
         data = extract_json(raw) or {}
         if not data:
             return self.run(keywords, category)
+
+        # 限定身份（季节/联名）由规则引擎统一判定，保证报告结构一致
+        season = self._detect_season(keywords)
+        cobrand = self._detect_cobrand(keywords)
+        notes = []
+        if season:
+            notes.append(self.SEASONS[season]["note"])
+        if cobrand:
+            notes.append(self.COBRANDS[cobrand]["note"])
+
         return DesignOutput(
             element=str(data.get("element", "极简设计")),
-            color_palette=[str(c) for c in data.get("color_palette", ["#FFFFFF", "#000000"])][:4],
+            color_palette=[str(c) for c in data.get("color_palette", ["#FFFFFF", "#000000"])][:5],
             material=str(data.get("material", "环保材料")),
             form_factor=str(data.get("form_factor", "日常便携")),
             prompt=str(
@@ -170,6 +307,9 @@ class DesignAgent:
                     f"{', '.join(keywords)}, {category}, minimalist, oriental aesthetic",
                 )
             ),
+            season=season,
+            cobrand=cobrand,
+            note="；".join(notes),
         )
 
 
