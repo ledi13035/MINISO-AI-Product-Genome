@@ -43,29 +43,97 @@ class DesignAgent:
                 "materials": ["亚克力", "镜面金属", "彩色塑料"],
             },
         }
+        # 类目默认设计语言（关键词未命中基因库时兜底，保证与品类强相关）
+        self.category_design = {
+            "饰品": {
+                "colors": ["#D4AF37", "#F5E6D3", "#C0C0C0", "#B76E79"],
+                "materials": ["合金镀金", "天然石", "925银"],
+                "form": "日常佩戴",
+            },
+            "生活家居": {
+                "colors": ["#2C5F2D", "#F5E6D3", "#C8102E", "#E8DCC4"],
+                "materials": ["陶瓷", "实木", "环保PET"],
+                "form": "桌面陈列",
+            },
+            "美妆": {
+                "colors": ["#FFCAD4", "#F4ACB7", "#FFF0F5", "#C81571"],
+                "materials": ["玻璃", "亚克力", "环保塑料"],
+                "form": "随身补妆",
+            },
+            "文具": {
+                "colors": ["#003366", "#FFD700", "#F5E6D3", "#9D8189"],
+                "materials": ["环保纸", "再生纸", "PP"],
+                "form": "桌面收纳",
+            },
+        }
+        # 关键词启发式（覆盖基因库之外的常见词，如 新中式 / 蝴蝶）
+        self.keyword_heuristics = {
+            "新中式": {
+                "elements": ["国风纹样", "留白构图", "水墨笔触"],
+                "colors": ["#C8102E", "#003366", "#F5E6D3"],
+            },
+            "蝴蝶": {
+                "elements": ["蝴蝶造型", "对称翅脉", "轻盈线条"],
+                "colors": ["#FF6B9D", "#00C9A7", "#C3B1E1"],
+            },
+            "国潮": {
+                "elements": ["国潮符号", "复古字体", "撞色块"],
+                "colors": ["#C8102E", "#FFD700", "#003366"],
+            },
+            "植物": {
+                "elements": ["植物轮廓", "叶片纹理", "自然曲线"],
+                "colors": ["#2C5F2D", "#A3C9A8", "#E8DCC4"],
+            },
+            "香氛": {
+                "elements": ["雾面瓶身", "柔光质感", "扩香纹理"],
+                "colors": ["#F5E6D3", "#E8DCC4", "#C81571"],
+            },
+        }
 
     def run(self, keywords: List[str], category: str) -> DesignOutput:
-        """根据关键词生成设计建议"""
+        """根据关键词 + 品类生成一套协调的设计语言（规则引擎，离线可用）。"""
         elements, colors, materials = [], [], []
         for kw in keywords:
             if kw in self.genome:
                 elements.extend(self.genome[kw]["elements"][:2])
                 colors.extend(self.genome[kw]["colors"][:2])
                 materials.extend(self.genome[kw]["materials"][:1])
+            elif kw in self.keyword_heuristics:
+                h = self.keyword_heuristics[kw]
+                elements.extend(h.get("elements", [])[:2])
+                colors.extend(h.get("colors", [])[:2])
+            else:
+                # 未知关键词：以其本身构造自然元素名，避免回退到笼统的"极简设计"
+                elements.append(f"{kw}元素")
+
+        # 类目兜底：保证配色/材料与品类强相关，且永不为空
+        cat = self.category_design.get(category)
+        if cat:
+            if not colors:
+                colors = list(cat["colors"])
+            if not materials:
+                materials = cat["materials"][:2]
+            form_factor = cat["form"]
+        else:
+            if not colors:
+                colors = ["#FFFFFF", "#000000"]
+            if not materials:
+                materials = ["环保材料"]
+            form_factor = "日常便携"
 
         # 去重保持顺序
-        elements = list(dict.fromkeys(elements))
+        elements = list(dict.fromkeys(elements)) or [f"{category}设计"]
         colors = list(dict.fromkeys(colors))
         materials = list(dict.fromkeys(materials))
 
         prompt = f"{', '.join(elements[:3])}, {category} design, {', '.join(colors[:3])}, minimalist, oriental aesthetic, healing vibe, product photography"
 
         return DesignOutput(
-            element=" + ".join(elements[:3]) if elements else "极简设计",
-            color_palette=colors[:4] if colors else ["#FFFFFF", "#000000"],
-            material="、".join(materials[:2]) if materials else "环保材料",
-            form_factor="圆润方形礼盒" if "盲盒" in str(elements) else "日常便携",
-            prompt=prompt
+            element=" + ".join(elements[:3]),
+            color_palette=colors[:4],
+            material="、".join(materials[:2]),
+            form_factor=form_factor,
+            prompt=prompt,
         )
 
     def to_dict(self, output: DesignOutput) -> dict:
